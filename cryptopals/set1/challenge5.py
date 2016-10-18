@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from cryptopals.set1 import Bytes
 
 
-def repeating_key_xor(data, key):
+def repeating_xor(data: Bytes, key: Bytes) -> bytes:
     """https://cryptopals.com/sets/1/challenges/5
     """
     key_len = len(key)

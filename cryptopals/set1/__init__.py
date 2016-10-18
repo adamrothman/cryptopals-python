@@ -1,7 +1,21 @@
 # -*- coding: utf-8 -*-
 from collections import Counter
+from collections import namedtuple
 from math import sqrt
+from typing import Iterator
+from typing import Sequence
+from typing import TypeVar
+from typing import Union
 
+
+Bytes = Union[bytearray, bytes]
+T = TypeVar('T')
+
+
+DecryptionCandidate = namedtuple(
+    'DecryptionCandidate',
+    ['key', 'plaintext', 'score'],
+)
 
 # http://www.data-compression.com/english.html
 ENGLISH_CHAR_FREQUENCIES = {
@@ -37,13 +51,22 @@ ENGLISH_CHARS = sorted(ENGLISH_CHAR_FREQUENCIES.keys())
 ENGLISH_FREQUENCY_VECTOR = [ENGLISH_CHAR_FREQUENCIES[c] for c in ENGLISH_CHARS]
 
 
-def cosine_similarity(a, b):
+def chunks(iterable: Sequence[T], n: int) -> Iterator[Sequence[T]]:
+    for i in range(0, len(iterable), n):
+        yield iterable[i:i + n]
+
+
+def cosine_similarity(
+    a: Sequence[float],
+    b: Sequence[float],
+) -> float:
     """See https://en.wikipedia.org/wiki/Cosine_similarity for details.
     """
-    if len(a) != len(b):
+    len_a, len_b = len(a), len(b)
+    if len_a != len_b:
         raise RuntimeError('Cosine similarity may only be computed between vectors of equal arity')
-    sum_a2, sum_ab, sum_b2 = 0, 0, 0
-    for i in range(len(a)):
+    sum_a2, sum_ab, sum_b2 = 0.0, 0.0, 0.0
+    for i in range(len_a):
         a_i, b_i = a[i], b[i]
         sum_a2 += a_i ** 2
         sum_ab += a_i * b_i
@@ -51,13 +74,13 @@ def cosine_similarity(a, b):
     return sum_ab / sqrt(sum_a2 * sum_b2)
 
 
-def english_language_score(data):
+def english_language_score(data: Bytes) -> float:
     """Calculates the cosine similarity between the frequencies of English
     alphabet characters in the sample and expected frequencies for the same
     letters. Returns a value in the interval [0, 1]; the higher the value, the
     more likely the sample is English.
     """
-    counter = Counter()
+    counter = Counter()  # type: Counter[str]
     for i in data:
         if i == 32 or (i >= 65 and i <= 90) or (i >= 97 and i <= 122):
             # space, A-Z, a-z
@@ -77,9 +100,15 @@ def english_language_score(data):
     return cosine_similarity(observed, ENGLISH_FREQUENCY_VECTOR)
 
 
-def most_likely_english(candidates):
-    pairs = []
-    for c in candidates:
-        score = english_language_score(c)
-        pairs.append((c, score))
-    return max(pairs, key=lambda p: p[1])
+def hamming_distance(a: Sequence[int], b: Sequence[int]) -> int:
+    len_a, len_b = len(a), len(b)
+    if len_a != len_b:
+        raise RuntimeError('Hamming distance may only be computed between buffers of equal size')
+    count = 0
+    for i in range(len_a):
+        count += hamming_weight(a[i] ^ b[i])
+    return count
+
+
+def hamming_weight(i: int) -> int:
+    return bin(i).count('1')

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from cryptopals import Bytes
+"""https://cryptopals.com/sets/1/challenges/5
+"""
 
 
-def repeating_xor(data: Bytes, key: Bytes) -> bytes:
-    """https://cryptopals.com/sets/1/challenges/5
-    """
+def repeating_xor(data: bytes, key: bytes) -> bytes:
     key_len = len(key)
     return bytes([
         key[i % key_len] ^ b

@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
+"""https://cryptopals.com/sets/1/challenges/6
+"""
 from itertools import combinations
 
-from cryptopals import Bytes
-from cryptopals import chunks
-from cryptopals.set1 import DecryptionCandidate
-from cryptopals.set1 import english_language_score
-from cryptopals.set1 import hamming_distance
+from cryptopals import DecryptionCandidate
 from cryptopals.set1.challenge3 import break_single_xor
 from cryptopals.set1.challenge5 import repeating_xor
+from cryptopals.utils import chunks
+from cryptopals.utils import english_language_score
+from cryptopals.utils import hamming_distance
 
 
 N = 4
 
 
-def break_repeating_xor(ciphertext: Bytes) -> DecryptionCandidate:
-    """https://cryptopals.com/sets/1/challenges/6
-    """
+def break_repeating_xor(ciphertext: bytes) -> DecryptionCandidate:
     size_distance_pairs = []
     for key_size in range(2, 41):
         first_n_blocks = list(chunks(ciphertext, key_size))[:N]
@@ -40,12 +39,12 @@ def break_repeating_xor(ciphertext: Bytes) -> DecryptionCandidate:
             for i, b in enumerate(block):
                 transposed[i].append(b)
 
-        key_parts = []  # type: List[int]
+        key_bytes = []
         for i, block in enumerate(transposed):
             part, _, _ = break_single_xor(block)
-            key_parts.extend(part)
+            key_bytes.extend(part)
 
-        key = bytes(key_parts)
+        key = bytes(key_bytes)
         plaintext = repeating_xor(ciphertext, key)
 
         candidates.append(

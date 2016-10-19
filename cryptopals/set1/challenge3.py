@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from cryptopals import Bytes
-from cryptopals.set1 import DecryptionCandidate
-from cryptopals.set1 import english_language_score
+"""https://cryptopals.com/sets/1/challenges/3
+"""
+from cryptopals import DecryptionCandidate
+from cryptopals.utils import english_language_score
 
 
-def break_single_xor(ciphertext: Bytes) -> DecryptionCandidate:
-    """https://cryptopals.com/sets/1/challenges/3
-    """
+def break_single_xor(ciphertext: bytes) -> DecryptionCandidate:
     candidates = []
     for k in range(256):
         plaintext = bytes([k ^ b for b in ciphertext])

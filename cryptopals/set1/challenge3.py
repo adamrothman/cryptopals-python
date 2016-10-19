@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from cryptopals.set1 import Bytes
+from cryptopals import Bytes
 from cryptopals.set1 import DecryptionCandidate
 from cryptopals.set1 import english_language_score
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Sequence
 
-from cryptopals.set1 import Bytes
+from cryptopals import Bytes
 from cryptopals.set1 import DecryptionCandidate
 from cryptopals.set1.challenge3 import break_single_xor
 

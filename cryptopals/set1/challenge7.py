@@ -4,10 +4,10 @@ from cryptography.hazmat.primitives.ciphers import Cipher          # type: ignor
 from cryptography.hazmat.primitives.ciphers.algorithms import AES  # type: ignore
 from cryptography.hazmat.primitives.ciphers.modes import ECB       # type: ignore
 
-from cryptopals.set1 import Bytes
+from cryptopals import Bytes
 
 
-def aes_ecb_decrypt(ciphertext: Bytes, key: Bytes) -> bytes:
+def decrypt_aes_ecb(ciphertext: Bytes, key: Bytes) -> bytes:
     """https://cryptopals.com/sets/1/challenges/7
     """
     backend = default_backend()

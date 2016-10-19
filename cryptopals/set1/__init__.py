@@ -2,20 +2,16 @@
 from collections import Counter
 from collections import namedtuple
 from math import sqrt
-from typing import Iterator
 from typing import Sequence
-from typing import TypeVar
-from typing import Union
 
-
-Bytes = Union[bytearray, bytes]
-T = TypeVar('T')
+from cryptopals import Bytes
 
 
 DecryptionCandidate = namedtuple(
     'DecryptionCandidate',
     ['key', 'plaintext', 'score'],
 )
+
 
 # http://www.data-compression.com/english.html
 ENGLISH_CHAR_FREQUENCIES = {
@@ -49,11 +45,6 @@ ENGLISH_CHAR_FREQUENCIES = {
 }
 ENGLISH_CHARS = sorted(ENGLISH_CHAR_FREQUENCIES.keys())
 ENGLISH_FREQUENCY_VECTOR = [ENGLISH_CHAR_FREQUENCIES[c] for c in ENGLISH_CHARS]
-
-
-def chunks(iterable: Sequence[T], n: int) -> Iterator[Sequence[T]]:
-    for i in range(0, len(iterable), n):
-        yield iterable[i:i + n]
 
 
 def cosine_similarity(

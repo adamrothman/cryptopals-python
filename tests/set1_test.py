@@ -10,6 +10,7 @@ from cryptopals.set1 import challenge4
 from cryptopals.set1 import challenge5
 from cryptopals.set1 import challenge6
 from cryptopals.set1 import challenge7
+from cryptopals.set1 import challenge8
 from cryptopals.set1 import hamming_distance
 
 
@@ -144,5 +145,12 @@ def test_challenge6():
 def test_challenge7():
     with open('data/7.txt') as f:
         ciphertext = b64decode(f.read())
-    plaintext = challenge7.aes_ecb_decrypt(ciphertext, b'YELLOW SUBMARINE')
+    plaintext = challenge7.decrypt_aes_ecb(ciphertext, b'YELLOW SUBMARINE')
     assert plaintext == PLAY_THAT_FUNKY_MUSIC
+
+
+def test_challenge8():
+    with open('data/8.txt') as f:
+        ciphertexts = [unhexlify(l.strip()) for l in f.readlines()]
+    result = challenge8.detect_aes_ecb(ciphertexts)
+    assert hexlify(result) == b'd880619740a8a19b7840a8a31c810a3d08649af70dc06f4fd5d2d69c744cd283e2dd052f6b641dbf9d11b0348542bb5708649af70dc06f4fd5d2d69c744cd2839475c9dfdbc1d46597949d9c7e82bf5a08649af70dc06f4fd5d2d69c744cd28397a93eab8d6aecd566489154789a6b0308649af70dc06f4fd5d2d69c744cd283d403180c98c8f6db1f2a3f9c4040deb0ab51b29933f2c123c58386b06fba186a'

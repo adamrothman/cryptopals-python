@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from itertools import combinations
 
-from cryptopals.set1 import Bytes
-from cryptopals.set1 import chunks
+from cryptopals import Bytes
+from cryptopals import chunks
 from cryptopals.set1 import DecryptionCandidate
 from cryptopals.set1 import english_language_score
 from cryptopals.set1 import hamming_distance

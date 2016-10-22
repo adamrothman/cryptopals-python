@@ -7,8 +7,4 @@ def fixed_xor(a: bytes, b: bytes) -> bytes:
     len_a, len_b = len(a), len(b)
     if len_a != len_b:
         raise ValueError('Cannot XOR two buffers of differing lengths')
-    return bytes([
-        a[i] ^ b[i]
-        for i
-        in range(len_a)
-    ])
+    return bytes([a[i] ^ b[i] for i in range(len_a)])

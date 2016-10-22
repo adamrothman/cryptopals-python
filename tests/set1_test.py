@@ -59,8 +59,8 @@ def test_challenge6(play_that_funky_music):
 def test_challenge7(play_that_funky_music_padded):
     with open('data/7.txt') as f:
         ciphertext = b64decode(f.read())
-    aes_ecb = challenge7.AESECB(b'YELLOW SUBMARINE')
-    plaintext = aes_ecb.decrypt(ciphertext)
+    cipher = challenge7.AESECB(b'YELLOW SUBMARINE')
+    plaintext = cipher.decrypt(ciphertext)
     assert plaintext == play_that_funky_music_padded
 
 

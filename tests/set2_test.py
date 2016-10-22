@@ -3,6 +3,7 @@ from base64 import b64decode
 
 from cryptopals.set2 import challenge9
 from cryptopals.set2 import challenge10
+from cryptopals.set2 import challenge11
 
 
 def test_challenge9():
@@ -29,13 +30,22 @@ def test_challenge10(play_that_funky_music_padded):
     with open('data/10.txt') as f:
         ciphertext = b64decode(f.read())
 
-    aes_cbc = challenge10.AESCBC(
+    cipher = challenge10.AESCBC(
         b'YELLOW SUBMARINE',
         b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     )
 
-    plaintext = aes_cbc.decrypt(ciphertext)
+    plaintext = cipher.decrypt(ciphertext)
     assert plaintext == play_that_funky_music_padded
 
-    _ciphertext = aes_cbc.encrypt(plaintext)
+    _ciphertext = cipher.encrypt(plaintext)
     assert _ciphertext == ciphertext
+
+
+def test_challenge11():
+    # Plaintext chosen to produce repeated blocks in ECB ciphertext
+    plaintext = b'a' * 100
+    for _ in range(10):
+        ciphertext, mode = challenge11.mystery_encrypt(plaintext)
+        guess = challenge11.encryption_oracle(ciphertext)
+        assert guess == mode

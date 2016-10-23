@@ -38,7 +38,7 @@ def mystery_encrypt(plaintext: bytes) -> bytes:
     return (ciphertext, mode)
 
 
-def encryption_oracle(ciphertext: bytes) -> bytes:
+def detect_block_cipher_mode(ciphertext: bytes) -> bytes:
     counter = Counter()
     for block in chunks(ciphertext, AES_BLOCK_SIZE_BYTES):
         counter[block] += 1

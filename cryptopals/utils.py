@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from collections import Counter
 from math import sqrt
+from os import urandom
 from typing import Iterator
 from typing import Sequence
 from typing import TypeVar
+
+from cryptopals import AES_BLOCK_SIZE_BYTES
 
 
 T = TypeVar('T')
@@ -87,6 +90,14 @@ def english_language_score(data: bytes) -> float:
     length = len(data)
     observed = [counter[c] / length for c in ENGLISH_CHARS]
     return cosine_similarity(observed, ENGLISH_FREQUENCY_VECTOR)
+
+
+def generate_aes_key() -> bytes:
+    return urandom(16)
+
+
+def generate_aes_iv() -> bytes:
+    return urandom(AES_BLOCK_SIZE_BYTES)
 
 
 def hamming_distance(a: bytes, b: bytes) -> int:

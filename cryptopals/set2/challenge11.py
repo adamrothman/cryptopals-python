@@ -3,30 +3,21 @@
 """
 import random
 from collections import Counter
-from os import urandom
 
 from cryptopals import AES_BLOCK_SIZE_BYTES
+from cryptopals import utils
 from cryptopals.set1.challenge7 import AESECB
 from cryptopals.set2.challenge10 import AESCBC
 from cryptopals.set2.challenge9 import PKCS7
-from cryptopals.utils import chunks
-
-
-def generate_aes_key() -> bytes:
-    return urandom(16)
-
-
-def generate_aes_iv() -> bytes:
-    return urandom(AES_BLOCK_SIZE_BYTES)
 
 
 def mystery_encrypt(plaintext: bytes) -> bytes:
-    key = generate_aes_key()
+    key = utils.generate_aes_key()
 
     if random.random() < 0.5:
         cipher = AESECB(key)
     else:
-        cipher = AESCBC(key, generate_aes_iv())
+        cipher = AESCBC(key, utils.generate_aes_iv())
 
     prefix_size = random.randint(5, 10)
     suffix_size = random.randint(5, 10)
@@ -40,7 +31,7 @@ def mystery_encrypt(plaintext: bytes) -> bytes:
 
 def detect_block_cipher_mode(ciphertext: bytes) -> bytes:
     counter = Counter()
-    for block in chunks(ciphertext, AES_BLOCK_SIZE_BYTES):
+    for block in utils.chunks(ciphertext, AES_BLOCK_SIZE_BYTES):
         counter[block] += 1
     most_common = counter.most_common(1)[0]
     return 'ECB' if most_common[1] > 1 else 'CBC'

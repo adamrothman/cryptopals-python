@@ -5,9 +5,9 @@ from typing import Callable
 
 from cryptopals import AES_BLOCK_SIZE_BYTES
 from cryptopals.set1.challenge7 import AESECB
-from cryptopals.set2.challenge9 import PKCS7
-from cryptopals.set2.challenge11 import generate_aes_key
 from cryptopals.set2.challenge11 import detect_block_cipher_mode
+from cryptopals.set2.challenge9 import PKCS7
+from cryptopals.utils import generate_aes_key
 
 
 UNKNOWN_STRING = (

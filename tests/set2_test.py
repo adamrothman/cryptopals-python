@@ -6,6 +6,7 @@ from cryptopals.set2 import challenge9
 from cryptopals.set2 import challenge10
 from cryptopals.set2 import challenge11
 from cryptopals.set2 import challenge12
+from cryptopals.set2 import challenge13
 
 
 def test_challenge9():
@@ -63,3 +64,9 @@ def test_challenge12():
         b"The girlies on standby waving just to say hi\n"
         b"Did you stop? No, I just drove by\n"
     )
+
+
+def test_challenge13():
+    ciphertext = challenge13.create_admin_ciphertext()
+    profile = challenge13.decrypt_and_parse(ciphertext)
+    assert profile['role'] == 'admin'

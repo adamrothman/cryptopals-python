@@ -3,6 +3,7 @@
 """
 import random
 from collections import Counter
+from typing import Callable
 
 from cryptopals import AES_BLOCK_SIZE_BYTES
 from cryptopals import utils
@@ -29,9 +30,11 @@ def mystery_encrypt(plaintext: bytes) -> bytes:
     return (ciphertext, mode)
 
 
-def detect_block_cipher_mode(ciphertext: bytes) -> bytes:
+def detect_block_cipher_mode(cipher: Callable[[bytes], bytes]) -> str:
+    pt = bytes(100)  # Chosen to produce repeated blocks in ECB ciphertext
+    ct = cipher(pt)
     counter = Counter()
-    for block in utils.chunks(ciphertext, AES_BLOCK_SIZE_BYTES):
+    for block in utils.chunks(ct, AES_BLOCK_SIZE_BYTES):
         counter[block] += 1
     most_common = counter.most_common(1)[0]
     return 'ECB' if most_common[1] > 1 else 'CBC'

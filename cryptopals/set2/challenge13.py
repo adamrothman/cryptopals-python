@@ -6,19 +6,13 @@ from urllib.parse import quote
 
 from cryptopals import AES_BLOCK_SIZE_BYTES
 from cryptopals.utils import generate_aes_key
+from cryptopals.utils import get_blocks
 from cryptopals.set1.challenge7 import AESECB
 from cryptopals.set2.challenge9 import PKCS7
 
 
-_key = None
+_key = generate_aes_key()
 _padder = PKCS7(AES_BLOCK_SIZE_BYTES)
-
-
-def _get_key() -> bytes:
-    global _key
-    if _key is None:
-        _key = generate_aes_key()
-    return _key
 
 
 def profile_for(email: str) -> Dict[str, Any]:
@@ -33,12 +27,12 @@ def profile_for(email: str) -> Dict[str, Any]:
 
 
 def encrypt(plaintext: bytes) -> bytes:
-    cipher = AESECB(_get_key())
+    cipher = AESECB(_key)
     return cipher.encrypt(_padder.pad(plaintext))
 
 
 def decrypt_and_parse(ciphertext: bytes) -> Dict[str, Any]:
-    cipher = AESECB(_get_key())
+    cipher = AESECB(_key)
     plaintext = cipher.decrypt(ciphertext)
     profile = _padder.unpad(plaintext)
     parsed = parse_qs(profile)
@@ -72,5 +66,4 @@ def create_admin_ciphertext() -> bytes:
     p2 = profile_for(email)
     ct2 = encrypt(p2)
 
-    ints = ct1[:2 * AES_BLOCK_SIZE_BYTES] + ct2[AES_BLOCK_SIZE_BYTES:2 * AES_BLOCK_SIZE_BYTES]
-    return bytes(ints)
+    return get_blocks(ct1, (0, 2), AES_BLOCK_SIZE_BYTES) + get_blocks(ct2, (1, 2), AES_BLOCK_SIZE_BYTES)

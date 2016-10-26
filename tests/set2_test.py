@@ -7,6 +7,7 @@ from cryptopals.set2 import challenge10
 from cryptopals.set2 import challenge11
 from cryptopals.set2 import challenge12
 from cryptopals.set2 import challenge13
+from cryptopals.set2 import challenge14
 
 
 def test_challenge9():
@@ -46,16 +47,23 @@ def test_challenge10(play_that_funky_music_padded):
 
 
 def test_challenge11():
-    # Plaintext chosen to produce repeated blocks in ECB ciphertext
-    plaintext = bytes(100)
-    for _ in range(10):
-        ciphertext, mode = challenge11.mystery_encrypt(plaintext)
-        guess = challenge11.detect_block_cipher_mode(ciphertext)
-        assert guess == mode
+    for _ in range(32):
+        mode_used = None
+
+        def cipher(pt: bytes) -> bytes:
+            """Need this wrapper to capture the actual mode used, for comparison
+            later.
+            """
+            nonlocal mode_used
+            ct, mode_used = challenge11.mystery_encrypt(pt)
+            return ct
+
+        guess = challenge11.detect_block_cipher_mode(cipher)
+        assert guess == mode_used
 
 
 def test_challenge12():
-    unknown = challenge12.decrypt_unknown()
+    unknown = challenge12.decrypt_unknown(challenge12.oracle_encrypt)
     padder = challenge9.PKCS7(AES_BLOCK_SIZE_BYTES)
     unpadded = padder.unpad(unknown)
     assert unpadded == (
@@ -70,3 +78,15 @@ def test_challenge13():
     ciphertext = challenge13.create_admin_ciphertext()
     profile = challenge13.decrypt_and_parse(ciphertext)
     assert profile['role'] == 'admin'
+
+
+def test_challenge14():
+    unknown = challenge14.decrypt_unknown_with_random_prefix()
+    padder = challenge9.PKCS7(AES_BLOCK_SIZE_BYTES)
+    unpadded = padder.unpad(unknown)
+    assert unpadded == (
+        b"Rollin' in my 5.0\n"
+        b"With my rag-top down so my hair can blow\n"
+        b"The girlies on standby waving just to say hi\n"
+        b"Did you stop? No, I just drove by\n"
+    )

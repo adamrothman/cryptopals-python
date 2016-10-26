@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+from binascii import hexlify
 from collections import Counter
 from math import sqrt
 from os import urandom
 from typing import Iterator
 from typing import Sequence
+from typing import Tuple
 from typing import TypeVar
+from typing import Union
 
 from cryptopals import AES_BLOCK_SIZE_BYTES
 
@@ -100,6 +103,13 @@ def generate_aes_iv() -> bytes:
     return urandom(AES_BLOCK_SIZE_BYTES)
 
 
+def get_blocks(b: bytes, i: Union[int, Tuple[int, int]], block_size: int) -> bytes:
+    if isinstance(i, int):
+        return b[block_size * i:block_size * (i + 1)]
+    elif isinstance(i, tuple):
+        return b[block_size * i[0]:block_size * i[1]]
+
+
 def hamming_distance(a: bytes, b: bytes) -> int:
     len_a, len_b = len(a), len(b)
     if len_a != len_b:
@@ -112,3 +122,9 @@ def hamming_distance(a: bytes, b: bytes) -> int:
 
 def hamming_weight(i: int) -> int:
     return bin(i).count('1')
+
+
+def pprint_bytes(b: bytes) -> None:
+    hex_str = hexlify(b).decode('utf-8')
+    s = '\n'.join([' '.join(chunks(chunk, 16)) for chunk in chunks(hex_str, 64)])
+    print(s)

@@ -10,28 +10,15 @@ from cryptopals.set2.challenge9 import PKCS7
 from cryptopals.utils import generate_aes_key
 
 
-UNKNOWN_STRING = (
+UNKNOWN_DATA = b64decode(
     'Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg'
     'aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq'
     'dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg'
     'YnkK'
 )
 
-_key = None
-
-
-def oracle_encrypt(plaintext: bytes) -> bytes:
-    global _key
-    if _key is None:
-        _key = generate_aes_key()
-
-    unknown_data = b64decode(UNKNOWN_STRING)
-
-    padder = PKCS7(AES_BLOCK_SIZE_BYTES)
-    padded = padder.pad(plaintext + unknown_data)
-
-    cipher = AESECB(_key)
-    return cipher.encrypt(padded)
+_key = generate_aes_key()
+_padder = PKCS7(AES_BLOCK_SIZE_BYTES)
 
 
 def detect_block_size(cipher: Callable[[bytes], bytes]) -> int:
@@ -43,29 +30,33 @@ def detect_block_size(cipher: Callable[[bytes], bytes]) -> int:
             return new - start
 
 
-def decrypt_unknown():
-    block_size = detect_block_size(oracle_encrypt)
+def oracle_encrypt(plaintext: bytes) -> bytes:
+    cipher = AESECB(_key)
+    padded = _padder.pad(plaintext + UNKNOWN_DATA)
+    return cipher.encrypt(padded)
 
-    ciphertext = oracle_encrypt(bytes(100))
-    mode = detect_block_cipher_mode(ciphertext)
-    if mode != 'ECB':
+
+def decrypt_unknown(cipher: Callable[[bytes], bytes]) -> bytes:
+    block_size = detect_block_size(cipher)
+    if detect_block_cipher_mode(cipher) != 'ECB':
         raise ValueError('Cipher not operating in ECB mode')
 
     known = []
     while True:
-        pad_size = block_size - (len(known) % block_size) - 1
+        pad_size = block_size - len(known) % block_size - 1
         pad = bytes(pad_size)
         base = pad + bytes(known)
 
         ciphertext_to_byte = {}
         for i in range(256):
             test_input = base + bytes([i])
-            ciphertext = oracle_encrypt(test_input)
-            chunk = ciphertext[:len(test_input)]
+            ct = cipher(test_input)
+            chunk = ct[:len(base) + 1]
             ciphertext_to_byte[chunk] = i
 
-        ciphertext = oracle_encrypt(pad)
-        chunk = ciphertext[:len(base) + 1]
+        # Encrypt with _only_ the padding
+        ct = cipher(pad)
+        chunk = ct[:len(base) + 1]
         byte = ciphertext_to_byte.get(chunk)
         if byte is None:
             return bytes(known)

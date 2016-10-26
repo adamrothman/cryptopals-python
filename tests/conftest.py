@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pytest import fixture
 
-from cryptopals.set2.challenge9 import PKCS7
+from cryptopals.set2.challenge9 import BasicPKCS7
 
 
 PLAY_THAT_FUNKY_MUSIC = (
@@ -94,4 +94,4 @@ def play_that_funky_music():
 
 @fixture
 def play_that_funky_music_padded():
-    return PKCS7(16).pad(PLAY_THAT_FUNKY_MUSIC)
+    return BasicPKCS7(16).pad(PLAY_THAT_FUNKY_MUSIC)

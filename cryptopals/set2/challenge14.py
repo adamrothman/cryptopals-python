@@ -8,14 +8,14 @@ from cryptopals.set1.challenge7 import AESECB
 from cryptopals.set2.challenge11 import detect_block_cipher_mode
 from cryptopals.set2.challenge12 import detect_block_size
 from cryptopals.set2.challenge12 import UNKNOWN_DATA
-from cryptopals.set2.challenge9 import PKCS7
+from cryptopals.set2.challenge9 import BasicPKCS7
 from cryptopals.utils import chunks
 from cryptopals.utils import generate_aes_key
 from cryptopals.utils import get_blocks
 
 
 _key = generate_aes_key()
-_padder = PKCS7(AES_BLOCK_SIZE_BYTES)
+_padder = BasicPKCS7(AES_BLOCK_SIZE_BYTES)
 _prefix = urandom(randint(0, 100))  # Decryption works for arbitrary sizes
 
 
@@ -34,7 +34,8 @@ def detect_prefix_size(cipher: Callable[[bytes], bytes]) -> int:
     # First we need to figure out which block the prefix extends into
     ref = cipher(bytes(block_size))
     matching = None
-    prefix_end_block_index = None  # Index of block containing the first non-prefix byte
+    # Index of block containing the first non-prefix byte
+    prefix_end_block_index = None
 
     for i in range(block_size - 1, -1, -1):
         ct = cipher(bytes(i))
@@ -62,14 +63,15 @@ def oracle_encrypt(plaintext: bytes) -> bytes:
     return cipher.encrypt(padded)
 
 
-def decrypt_unknown_with_random_prefix():
+def decrypt_unknown_with_prefix():
     block_size = detect_block_size(oracle_encrypt)
     if detect_block_cipher_mode(oracle_encrypt) != 'ECB':
         raise ValueError('Cipher not operating in ECB mode')
 
     prefix_size = detect_prefix_size(oracle_encrypt)
 
-    # Number of bytes we should ignore; prefix size rounded up to next block boundary
+    # Number of bytes we should ignore; prefix size rounded up to next block
+    # boundary.
     ignore = prefix_size + block_size - prefix_size % block_size
 
     known = []

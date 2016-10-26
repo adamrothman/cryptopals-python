@@ -8,11 +8,11 @@ from cryptopals import AES_BLOCK_SIZE_BYTES
 from cryptopals.utils import generate_aes_key
 from cryptopals.utils import get_blocks
 from cryptopals.set1.challenge7 import AESECB
-from cryptopals.set2.challenge9 import PKCS7
+from cryptopals.set2.challenge9 import BasicPKCS7
 
 
 _key = generate_aes_key()
-_padder = PKCS7(AES_BLOCK_SIZE_BYTES)
+_padder = BasicPKCS7(AES_BLOCK_SIZE_BYTES)
 
 
 def profile_for(email: str) -> Dict[str, Any]:

@@ -9,7 +9,7 @@ from cryptopals import AES_BLOCK_SIZE_BYTES
 from cryptopals import utils
 from cryptopals.set1.challenge7 import AESECB
 from cryptopals.set2.challenge10 import AESCBC
-from cryptopals.set2.challenge9 import PKCS7
+from cryptopals.set2.challenge9 import BasicPKCS7
 
 
 def mystery_encrypt(plaintext: bytes) -> bytes:
@@ -22,7 +22,7 @@ def mystery_encrypt(plaintext: bytes) -> bytes:
 
     prefix_size = random.randint(5, 10)
     suffix_size = random.randint(5, 10)
-    padder = PKCS7(AES_BLOCK_SIZE_BYTES)
+    padder = BasicPKCS7(AES_BLOCK_SIZE_BYTES)
     padded = padder.pad(bytes(prefix_size) + plaintext + bytes(suffix_size))
 
     ciphertext = cipher.encrypt(padded)

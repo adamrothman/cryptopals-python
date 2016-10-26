@@ -3,7 +3,7 @@
 """
 
 
-class PKCS7:
+class BasicPKCS7:
 
     def __init__(self, block_size):
         if block_size >= 256:

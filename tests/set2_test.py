@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from base64 import b64decode
 
+from pytest import raises
+
 from cryptopals import AES_BLOCK_SIZE_BYTES
 from cryptopals.set2 import challenge9
 from cryptopals.set2 import challenge10
@@ -8,22 +10,23 @@ from cryptopals.set2 import challenge11
 from cryptopals.set2 import challenge12
 from cryptopals.set2 import challenge13
 from cryptopals.set2 import challenge14
+from cryptopals.set2 import challenge15
 
 
 def test_challenge9():
-    padder = challenge9.PKCS7(20)
+    padder = challenge9.BasicPKCS7(20)
     padded = padder.pad(b'YELLOW SUBMARINE')
     assert padded == b'YELLOW SUBMARINE\x04\x04\x04\x04'
     unpadded = padder.unpad(padded)
     assert unpadded == b'YELLOW SUBMARINE'
 
-    padder = challenge9.PKCS7(4)
+    padder = challenge9.BasicPKCS7(4)
     padded = padder.pad(b'hello world')
     assert padded == b'hello world\x01'
     unpadded = padder.unpad(padded)
     assert unpadded == b'hello world'
 
-    padder = challenge9.PKCS7(16)
+    padder = challenge9.BasicPKCS7(16)
     padded = padder.pad(b'YELLOW SUBMARINE')
     assert padded == b'YELLOW SUBMARINE\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10'
     unpadded = padder.unpad(padded)
@@ -64,7 +67,7 @@ def test_challenge11():
 
 def test_challenge12():
     unknown = challenge12.decrypt_unknown(challenge12.oracle_encrypt)
-    padder = challenge9.PKCS7(AES_BLOCK_SIZE_BYTES)
+    padder = challenge9.BasicPKCS7(AES_BLOCK_SIZE_BYTES)
     unpadded = padder.unpad(unknown)
     assert unpadded == (
         b"Rollin' in my 5.0\n"
@@ -81,8 +84,8 @@ def test_challenge13():
 
 
 def test_challenge14():
-    unknown = challenge14.decrypt_unknown_with_random_prefix()
-    padder = challenge9.PKCS7(AES_BLOCK_SIZE_BYTES)
+    unknown = challenge14.decrypt_unknown_with_prefix()
+    padder = challenge9.BasicPKCS7(AES_BLOCK_SIZE_BYTES)
     unpadded = padder.unpad(unknown)
     assert unpadded == (
         b"Rollin' in my 5.0\n"
@@ -90,3 +93,18 @@ def test_challenge14():
         b"The girlies on standby waving just to say hi\n"
         b"Did you stop? No, I just drove by\n"
     )
+
+
+def test_challenge15():
+    padder = challenge15.PKCS7(16)
+
+    padded = padder.pad(b'YELLOW SUBMARINE')
+    assert padded == b'YELLOW SUBMARINE\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10\x10'
+    unpadded = padder.unpad(padded)
+    assert unpadded == b'YELLOW SUBMARINE'
+
+    assert padder.unpad(b'ICE ICE BABY\x04\x04\x04\x04') == b'ICE ICE BABY'
+    with raises(challenge15.InvalidPaddingError):
+        padder.unpad(b'ICE ICE BABY\x05\x05\x05\x05')
+    with raises(challenge15.InvalidPaddingError):
+        padder.unpad(b'ICE ICE BABY\x01\x02\x03\x04')

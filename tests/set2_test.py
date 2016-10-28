@@ -11,6 +11,7 @@ from cryptopals.set2 import challenge12
 from cryptopals.set2 import challenge13
 from cryptopals.set2 import challenge14
 from cryptopals.set2 import challenge15
+from cryptopals.set2 import challenge16
 
 
 def test_challenge9():
@@ -65,16 +66,11 @@ def test_challenge11():
         assert guess == mode_used
 
 
-def test_challenge12():
+def test_challenge12(rollin_in_my_50):
     unknown = challenge12.decrypt_unknown(challenge12.oracle_encrypt)
     padder = challenge9.BasicPKCS7(AES_BLOCK_SIZE_BYTES)
     unpadded = padder.unpad(unknown)
-    assert unpadded == (
-        b"Rollin' in my 5.0\n"
-        b"With my rag-top down so my hair can blow\n"
-        b"The girlies on standby waving just to say hi\n"
-        b"Did you stop? No, I just drove by\n"
-    )
+    assert unpadded == rollin_in_my_50
 
 
 def test_challenge13():
@@ -83,16 +79,11 @@ def test_challenge13():
     assert profile['role'] == 'admin'
 
 
-def test_challenge14():
+def test_challenge14(rollin_in_my_50):
     unknown = challenge14.decrypt_unknown_with_prefix()
     padder = challenge9.BasicPKCS7(AES_BLOCK_SIZE_BYTES)
     unpadded = padder.unpad(unknown)
-    assert unpadded == (
-        b"Rollin' in my 5.0\n"
-        b"With my rag-top down so my hair can blow\n"
-        b"The girlies on standby waving just to say hi\n"
-        b"Did you stop? No, I just drove by\n"
-    )
+    assert unpadded == rollin_in_my_50
 
 
 def test_challenge15():
@@ -108,3 +99,11 @@ def test_challenge15():
         padder.unpad(b'ICE ICE BABY\x05\x05\x05\x05')
     with raises(challenge15.InvalidPaddingError):
         padder.unpad(b'ICE ICE BABY\x01\x02\x03\x04')
+
+
+def test_challenge16():
+    ct = challenge16.encrypt(b'a;admin=true')
+    assert challenge16.verify_admin(ct) is False
+
+    ct = challenge16.craft_ciphertext()
+    assert challenge16.verify_admin(ct) is True

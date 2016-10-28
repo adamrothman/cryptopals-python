@@ -86,6 +86,13 @@ PLAY_THAT_FUNKY_MUSIC = (
     b"Play that funky music \n"
 )
 
+ROLLIN_IN_MY_50 = (
+    b"Rollin' in my 5.0\n"
+    b"With my rag-top down so my hair can blow\n"
+    b"The girlies on standby waving just to say hi\n"
+    b"Did you stop? No, I just drove by\n"
+)
+
 
 @fixture
 def play_that_funky_music():
@@ -95,3 +102,8 @@ def play_that_funky_music():
 @fixture
 def play_that_funky_music_padded():
     return BasicPKCS7(16).pad(PLAY_THAT_FUNKY_MUSIC)
+
+
+@fixture
+def rollin_in_my_50():
+    return ROLLIN_IN_MY_50

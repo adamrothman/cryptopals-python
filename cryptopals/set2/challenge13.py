@@ -12,13 +12,16 @@ from cryptopals.set2.challenge9 import BasicPKCS7
 
 
 _key = generate_aes_key()
+_cipher = AESECB(_key)
 _padder = BasicPKCS7(AES_BLOCK_SIZE_BYTES)
 
 
 def profile_for(email: str) -> Dict[str, Any]:
-    escaped = email.replace('&', quote('&')).replace('=', quote('='))
+    quoted = email
+    for c in ('&', '='):
+        quoted = quoted.replace(c, quote(c))
     profile = (
-        ('email', escaped),
+        ('email', quoted),
         ('uid', '10'),
         ('role', 'user'),
     )
@@ -27,13 +30,11 @@ def profile_for(email: str) -> Dict[str, Any]:
 
 
 def encrypt(plaintext: bytes) -> bytes:
-    cipher = AESECB(_key)
-    return cipher.encrypt(_padder.pad(plaintext))
+    return _cipher.encrypt(_padder.pad(plaintext))
 
 
 def decrypt_and_parse(ciphertext: bytes) -> Dict[str, Any]:
-    cipher = AESECB(_key)
-    plaintext = cipher.decrypt(ciphertext)
+    plaintext = _cipher.decrypt(ciphertext)
     profile = _padder.unpad(plaintext)
     parsed = parse_qs(profile)
     return {

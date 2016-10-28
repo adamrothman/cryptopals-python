@@ -18,6 +18,7 @@ UNKNOWN_DATA = b64decode(
 )
 
 _key = generate_aes_key()
+_cipher = AESECB(_key)
 _padder = BasicPKCS7(AES_BLOCK_SIZE_BYTES)
 
 
@@ -31,9 +32,8 @@ def detect_block_size(cipher: Callable[[bytes], bytes]) -> int:
 
 
 def oracle_encrypt(plaintext: bytes) -> bytes:
-    cipher = AESECB(_key)
     padded = _padder.pad(plaintext + UNKNOWN_DATA)
-    return cipher.encrypt(padded)
+    return _cipher.encrypt(padded)
 
 
 def decrypt_unknown(cipher: Callable[[bytes], bytes]) -> bytes:

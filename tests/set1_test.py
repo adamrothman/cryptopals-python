@@ -3,6 +3,11 @@ from base64 import b64decode
 from binascii import hexlify
 from binascii import unhexlify
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher
+from cryptography.hazmat.primitives.ciphers.algorithms import AES
+from cryptography.hazmat.primitives.ciphers.modes import ECB
+
 from cryptopals.set1 import challenge1
 from cryptopals.set1 import challenge2
 from cryptopals.set1 import challenge3
@@ -11,6 +16,7 @@ from cryptopals.set1 import challenge5
 from cryptopals.set1 import challenge6
 from cryptopals.set1 import challenge7
 from cryptopals.set1 import challenge8
+from cryptopals.testing import check_cipher_interoperability
 
 
 def test_challenge1():
@@ -57,9 +63,18 @@ def test_challenge6(play_that_funky_music):
 
 
 def test_challenge7(play_that_funky_music_padded):
+    key = b'YELLOW SUBMARINE'
+
+    cipher = challenge7.AESECB(key)
+    reference = Cipher(AES(key), ECB(), default_backend())
+    check_cipher_interoperability(
+        cipher,
+        reference,
+        b'welcome to the wonderful world of cryptography\x02\x02',
+    )
+
     with open('data/7.txt') as f:
         ciphertext = b64decode(f.read())
-    cipher = challenge7.AESECB(b'YELLOW SUBMARINE')
     plaintext = cipher.decrypt(ciphertext)
     assert plaintext == play_that_funky_music_padded
 

@@ -3,7 +3,7 @@ from cryptopals.set2.challenge9 import BasicPKCS7
 
 
 class InvalidPaddingError(Exception):
-    pass
+    ...
 
 
 class PKCS7(BasicPKCS7):

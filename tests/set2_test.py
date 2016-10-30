@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from base64 import b64decode
+from os import urandom
 
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher
+from cryptography.hazmat.primitives.ciphers.algorithms import AES
+from cryptography.hazmat.primitives.ciphers.modes import CBC
 from pytest import raises
 
 from cryptopals import AES_BLOCK_SIZE_BYTES
@@ -12,6 +17,7 @@ from cryptopals.set2 import challenge13
 from cryptopals.set2 import challenge14
 from cryptopals.set2 import challenge15
 from cryptopals.set2 import challenge16
+from cryptopals.testing import check_cipher_interoperability
 
 
 def test_challenge9():
@@ -35,19 +41,22 @@ def test_challenge9():
 
 
 def test_challenge10(play_that_funky_music_padded):
-    with open('data/10.txt') as f:
-        ciphertext = b64decode(f.read())
+    key = b'YELLOW SUBMARINE'
+    iv = urandom(16)
 
-    cipher = challenge10.AESCBC(
-        b'YELLOW SUBMARINE',
-        b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+    cipher = challenge10.AESCBC(key, iv)
+    reference = Cipher(AES(key), CBC(iv), default_backend())
+    check_cipher_interoperability(
+        cipher,
+        reference,
+        b'welcome to the wonderful world of cryptography\x02\x02',
     )
 
+    cipher = challenge10.AESCBC(key, bytes(16))
+    with open('data/10.txt') as f:
+        ciphertext = b64decode(f.read())
     plaintext = cipher.decrypt(ciphertext)
     assert plaintext == play_that_funky_music_padded
-
-    _ciphertext = cipher.encrypt(plaintext)
-    assert _ciphertext == ciphertext
 
 
 def test_challenge11():

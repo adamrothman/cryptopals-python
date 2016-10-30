@@ -2,17 +2,20 @@
 """https://cryptopals.com/sets/2/challenges/10
 """
 from cryptopals import AES_BLOCK_SIZE_BYTES
+from cryptopals import Cipher
 from cryptopals.set1.challenge2 import fixed_xor
 from cryptopals.set1.challenge7 import AESECB
 from cryptopals.utils import chunks
 
 
-class AESCBC:
+class AESCBC(Cipher):
 
     def __init__(self, key: bytes, iv: bytes):
         self.aes_ecb = AESECB(key)
         if len(iv) != AES_BLOCK_SIZE_BYTES:
-            raise ValueError('Invalid IV size ({}) for AES'.format(len(iv) * 8))
+            raise ValueError(
+                'Invalid IV size ({} bytes) for AES CBC'.format(len(iv))
+            )
         self.iv = iv
 
     def decrypt(self, ciphertext: bytes) -> bytes:
